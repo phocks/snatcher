@@ -20,6 +20,7 @@ function updateIcon() {
     // Screen readers can see the title
     title: currentBookmark ? 'Unbookmark it!' : 'Bookmark it!',
     tabId: currentTab.id
+    
   }); 
 }
 
@@ -27,12 +28,16 @@ function updateIcon() {
  * Add or remove the bookmark on the current page.
  */
 function toggleBookmark() {
+  console.log("Yeah!")
   if (currentBookmark) {
     browser.bookmarks.remove(currentBookmark.id);
   } else {
     browser.bookmarks.create({title: currentTab.title, url: currentTab.url});
   }
+  
 }
+
+
 
 browser.browserAction.onClicked.addListener(toggleBookmark);
 
@@ -40,6 +45,7 @@ browser.browserAction.onClicked.addListener(toggleBookmark);
  * Switches currentTab and currentBookmark to reflect the currently active tab
  */
 function updateActiveTab(tabs) {
+  
 
   function isSupportedProtocol(urlString) {
     var supportedProtocols = ["https:", "http:", "ftp:", "file:"];
