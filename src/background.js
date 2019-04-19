@@ -1,28 +1,28 @@
 // Firebase App (the core Firebase SDK) is always required and
 // must be listed before other Firebase SDKs
-// import * as firebase from "firebase/app";
+import * as firebase from "firebase/app";
 
-// // Add the Firebase services that you want to use
-// import "firebase/auth";
-// import "firebase/database";
+// Add the Firebase services that you want to use
+import "firebase/auth";
+import "firebase/database";
 
-// // Initialize Firebase
-// const config = {
-//   apiKey: "AIzaSyCQXwyttLMQLpYttt0J_7tBS7Mb83yKz6A",
-//   authDomain: "snatcher-app.firebaseapp.com",
-//   databaseURL: "https://snatcher-app.firebaseio.com",
-//   projectId: "snatcher-app",
-//   storageBucket: "snatcher-app.appspot.com",
-//   messagingSenderId: "309876102845"
-// };
-// firebase.initializeApp(config);
+// Initialize Firebase
+const config = {
+  apiKey: "AIzaSyCQXwyttLMQLpYttt0J_7tBS7Mb83yKz6A",
+  authDomain: "snatcher-app.firebaseapp.com",
+  databaseURL: "https://snatcher-app.firebaseio.com",
+  projectId: "snatcher-app",
+  storageBucket: "snatcher-app.appspot.com",
+  messagingSenderId: "309876102845"
+};
+firebase.initializeApp(config);
 
-// // Get a reference to the database service
-// const database = firebase.database();
+// Get a reference to the database service
+const database = firebase.database();
 
-// database.ref('test/').set({
-//   hello: "test"
-// });
+database.ref('test/').set({
+  hello: "test"
+});
 
 console.log("Hello world!!!")
 
