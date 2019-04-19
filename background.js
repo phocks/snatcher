@@ -1,92 +1,66 @@
-var currentTab;
-var currentBookmark;
+'use strict';
 
-/*
- * Updates the browserAction icon to reflect whether the current page
- * is already bookmarked.
- */
-function updateIcon() {
-  browser.browserAction.setIcon({
-    path: currentBookmark ? {
-      19: "icons/star-filled-19.png",
-      38: "icons/star-filled-38.png"
-    } : {
-      19: "icons/star-empty-19.png",
-      38: "icons/star-empty-38.png"
-    },
-    tabId: currentTab.id
-  });
-  browser.browserAction.setTitle({
-    // Screen readers can see the title
-    title: currentBookmark ? 'Unbookmark it!' : 'Bookmark it!',
-    tabId: currentTab.id
-    
-  }); 
-}
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
+  try {
+    var info = gen[key](arg);
+    var value = info.value;
+  } catch (error) {
+    reject(error);
+    return;
+  }
 
-/*
- * Add or remove the bookmark on the current page.
- */
-function toggleBookmark() {
-  console.log("Yeah!")
-  if (currentBookmark) {
-    browser.bookmarks.remove(currentBookmark.id);
+  if (info.done) {
+    resolve(value);
   } else {
-    browser.bookmarks.create({title: currentTab.title, url: currentTab.url});
+    Promise.resolve(value).then(_next, _throw);
   }
-  
 }
 
+function _asyncToGenerator(fn) {
+  return function () {
+    var self = this,
+        args = arguments;
+    return new Promise(function (resolve, reject) {
+      var gen = fn.apply(self, args);
 
-
-browser.browserAction.onClicked.addListener(toggleBookmark);
-
-/*
- * Switches currentTab and currentBookmark to reflect the currently active tab
- */
-function updateActiveTab(tabs) {
-  
-
-  function isSupportedProtocol(urlString) {
-    var supportedProtocols = ["https:", "http:", "ftp:", "file:"];
-    var url = document.createElement('a');
-    url.href = urlString;
-    return supportedProtocols.indexOf(url.protocol) != -1;
-  }
-
-  function updateTab(tabs) {
-    if (tabs[0]) {
-      currentTab = tabs[0];
-      if (isSupportedProtocol(currentTab.url)) {
-        var searching = browser.bookmarks.search({url: currentTab.url});
-        searching.then((bookmarks) => {
-          currentBookmark = bookmarks[0];
-          updateIcon();
-        });
-      } else {
-        console.log(`Bookmark it! does not support the '${currentTab.url}' URL.`)
+      function _next(value) {
+        asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);
       }
-    }
-  }
 
-  var gettingActiveTab = browser.tabs.query({active: true, currentWindow: true});
-  gettingActiveTab.then(updateTab);
+      function _throw(err) {
+        asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);
+      }
+
+      _next(undefined);
+    });
+  };
 }
 
-// listen for bookmarks being created
-browser.bookmarks.onCreated.addListener(updateActiveTab);
+var version = "0.0.1";
 
-// listen for bookmarks being removed
-browser.bookmarks.onRemoved.addListener(updateActiveTab);
+var hello =
+/*#__PURE__*/
+function () {
+  var _ref = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee() {
+    return regeneratorRuntime.wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            console.log('version ' + version);
 
-// listen to tab URL changes
-browser.tabs.onUpdated.addListener(updateActiveTab);
+          case 1:
+          case "end":
+            return _context.stop();
+        }
+      }
+    }, _callee);
+  }));
 
-// listen to tab switching
-browser.tabs.onActivated.addListener(updateActiveTab);
+  return function hello() {
+    return _ref.apply(this, arguments);
+  };
+}();
 
-// listen for window switching
-browser.windows.onFocusChanged.addListener(updateActiveTab);
-
-// update when the extension loads initially
-updateActiveTab();
+hello();
