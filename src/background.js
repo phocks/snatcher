@@ -5,6 +5,7 @@ import * as firebase from "firebase/app";
 // Add the Firebase services that you want to use
 import "firebase/auth";
 import "firebase/database";
+import "firebase/firestore";
 
 // Initialize Firebase
 const config = {
@@ -19,8 +20,9 @@ firebase.initializeApp(config);
 
 // Get a reference to the database service
 const database = firebase.database();
+const db = firebase.firestore();
 
-console.log("Hello world!!!");
+console.log("Hello world!");
 
 var currentTab;
 var currentBookmark;
@@ -58,7 +60,18 @@ function toggleBookmark() {
   } else {
     browser.bookmarks.create({ title: currentTab.title, url: currentTab.url });
   }
-  database.ref("test/").push().set({ title: currentTab.title, url: currentTab.url });
+  db.collection("users")
+    .add({
+      first: "Ada",
+      last: "Lovelace",
+      born: 1815
+    })
+    .then(function(docRef) {
+      console.log("Document written with ID: ", docRef.id);
+    })
+    .catch(function(error) {
+      console.error("Error adding document: ", error);
+    });
 }
 
 browser.browserAction.onClicked.addListener(toggleBookmark);
