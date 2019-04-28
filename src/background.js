@@ -27,8 +27,6 @@ const db = firebase.firestore();
 var currentTab;
 var currentBookmark;
 
-console.log(process.env.DB_HOST)
-
 /*
  * Updates the browserAction icon to reflect whether the current page
  * is already bookmarked.
@@ -62,12 +60,18 @@ function toggleBookmark() {
   // } else {
   //   browser.bookmarks.create({ title: currentTab.title, url: currentTab.url });
   // }
-  db.collection("urls").add({
-    title: currentTab.title,
-    url: currentTab.url,
-    timestamp: firebase.firestore.FieldValue.serverTimestamp()
-  });
-
+  db.collection("urls")
+    .add({
+      title: currentTab.title,
+      url: currentTab.url,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    })
+    .then(function(docRef) {
+      console.log("Document written with ID: ", docRef.id);
+    })
+    .catch(function(error) {
+      console.error("Error adding document: ", error);
+    });
 }
 
 browser.browserAction.onClicked.addListener(toggleBookmark);
@@ -83,12 +87,6 @@ function updateActiveTab(tabs) {
 
   gettingActiveTab.then(updateTab);
 }
-
-// listen for bookmarks being created
-browser.bookmarks.onCreated.addListener(updateActiveTab);
-
-// listen for bookmarks being removed
-browser.bookmarks.onRemoved.addListener(updateActiveTab);
 
 // listen to tab URL changes
 browser.tabs.onUpdated.addListener(updateActiveTab);
