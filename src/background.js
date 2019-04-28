@@ -1,3 +1,5 @@
+import "regenerator-runtime/runtime";
+
 // Firebase App (the core Firebase SDK) is always required and
 // must be listed before other Firebase SDKs
 import * as firebase from "firebase/app";
@@ -9,23 +11,23 @@ import "firebase/firestore";
 
 // Initialize Firebase
 const config = {
-  apiKey: "AIzaSyCQXwyttLMQLpYttt0J_7tBS7Mb83yKz6A",
+  apiKey: process.env.API_KEY,
   authDomain: "snatcher-app.firebaseapp.com",
   databaseURL: "https://snatcher-app.firebaseio.com",
   projectId: "snatcher-app",
   storageBucket: "snatcher-app.appspot.com",
   messagingSenderId: "309876102845"
 };
+
 firebase.initializeApp(config);
 
 // Get a reference to the database service
-const database = firebase.database();
 const db = firebase.firestore();
-
-console.log("Hello world!");
 
 var currentTab;
 var currentBookmark;
+
+console.log(process.env.DB_HOST)
 
 /*
  * Updates the browserAction icon to reflect whether the current page
@@ -55,23 +57,17 @@ function updateIcon() {
  * Add or remove the bookmark on the current page.
  */
 function toggleBookmark() {
-  if (currentBookmark) {
-    browser.bookmarks.remove(currentBookmark.id);
-  } else {
-    browser.bookmarks.create({ title: currentTab.title, url: currentTab.url });
-  }
-  db.collection("users")
-    .add({
-      first: "Ada",
-      last: "Lovelace",
-      born: 1815
-    })
-    .then(function(docRef) {
-      console.log("Document written with ID: ", docRef.id);
-    })
-    .catch(function(error) {
-      console.error("Error adding document: ", error);
-    });
+  // if (currentBookmark) {
+  //   browser.bookmarks.remove(currentBookmark.id);
+  // } else {
+  //   browser.bookmarks.create({ title: currentTab.title, url: currentTab.url });
+  // }
+  db.collection("urls").add({
+    title: currentTab.title,
+    url: currentTab.url,
+    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+  });
+
 }
 
 browser.browserAction.onClicked.addListener(toggleBookmark);
@@ -80,34 +76,11 @@ browser.browserAction.onClicked.addListener(toggleBookmark);
  * Switches currentTab and currentBookmark to reflect the currently active tab
  */
 function updateActiveTab(tabs) {
-  function isSupportedProtocol(urlString) {
-    var supportedProtocols = ["https:", "http:", "ftp:", "file:"];
-    var url = document.createElement("a");
-    url.href = urlString;
-    return supportedProtocols.indexOf(url.protocol) != -1;
-  }
-
-  function updateTab(tabs) {
-    if (tabs[0]) {
-      currentTab = tabs[0];
-      if (isSupportedProtocol(currentTab.url)) {
-        var searching = browser.bookmarks.search({ url: currentTab.url });
-        searching.then(bookmarks => {
-          currentBookmark = bookmarks[0];
-          updateIcon();
-        });
-      } else {
-        console.log(
-          `Bookmark it! does not support the '${currentTab.url}' URL.`
-        );
-      }
-    }
-  }
-
   var gettingActiveTab = browser.tabs.query({
     active: true,
     currentWindow: true
   });
+
   gettingActiveTab.then(updateTab);
 }
 
@@ -128,3 +101,25 @@ browser.windows.onFocusChanged.addListener(updateActiveTab);
 
 // update when the extension loads initially
 updateActiveTab();
+
+function isSupportedProtocol(urlString) {
+  var supportedProtocols = ["https:", "http:", "ftp:", "file:"];
+  var url = document.createElement("a");
+  url.href = urlString;
+  return supportedProtocols.indexOf(url.protocol) != -1;
+}
+
+function updateTab(tabs) {
+  if (tabs[0]) {
+    currentTab = tabs[0];
+    if (isSupportedProtocol(currentTab.url)) {
+      var searching = browser.bookmarks.search({ url: currentTab.url });
+      searching.then(bookmarks => {
+        currentBookmark = bookmarks[0];
+        updateIcon();
+      });
+    } else {
+      console.log(`Bookmark it! does not support the '${currentTab.url}' URL.`);
+    }
+  }
+}
