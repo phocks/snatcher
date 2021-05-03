@@ -27,6 +27,6 @@
   },
   "dependencies": {
     "firebase": "^5.11.1",
-    "regenerator-runtime": "^0.13.2"
+    "regenerator-runtime": "^0.13.7"
   }
 }
